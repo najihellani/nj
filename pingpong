@@ -1,0 +1,120 @@
+import pygame
+pygame.init()
+screen = pygame.display.set_mode((800,400))
+clock = pygame.time.Clock()
+pygame.display.set_caption('ping_pong')
+font = pygame.font.Font(None,50)
+bg = pygame.image.load('bg.jpg')
+p1 = pygame.Surface((20,100))
+p1.fill('red')
+player1 = p1.get_rect()
+p2 = pygame.Surface((20,100))
+p2.fill('green')
+Ball = pygame.image.load('football.png')
+Ball_rect = Ball.get_rect()
+Ball_height = Ball.get_rect().height
+Ball_width = Ball.get_rect().width
+Ball_scaled = pygame.transform.scale(Ball,(Ball_width*0.08,Ball_height*0.08))
+player2 = p2.get_rect()
+height = p1.get_rect().height
+p1_y = 150
+p2_y = 150
+ball_x = 380
+ball_y = 200
+ballspeed_x = 4
+ballspeed_y = 4
+p1_goals = 0
+p2_goals = 0
+text = font.render(f'{p1_goals} | {p2_goals}',False,'white')
+gameactive = True
+run = True
+while run:
+    if gameactive == True:
+        mp = pygame.key.get_pressed()
+        if mp[pygame.K_w]:
+            p1_y -= 4
+        if mp[pygame.K_s]:
+            p1_y += 4
+        if mp[pygame.K_DOWN]:
+            p2_y += 4
+        if mp[pygame.K_UP]:
+            p2_y -= 4
+        player1.x = 0
+        player1.y = p1_y
+        player2.x = 780
+        player2.y = p2_y 
+        if ball_x <= -50:
+            ball_x = 380
+            ball_y = 200
+            p2_goals += 1
+            ballspeed_x *= -1
+        if ball_y <= 20:
+            ball_y = 20
+            ballspeed_y *= -1
+        if ball_y >= 380:
+            ball_y = 380
+            ballspeed_y *= -1
+        if ball_x >= 830:
+            ball_x = 380
+            ball_y = 200
+            ballspeed_x *= -1
+            p1_goals += 1 
+        text =  text = font.render(f'{p1_goals} | {p2_goals}',False,'white') 
+        if p1_goals == 10 or p2_goals == 10:
+            gameactive = False
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+        screen.blit(bg,(0,0)) 
+        screen.blit(p1,(0,p1_y))
+        screen.blit(p2,(780,p2_y))
+        ball = screen.blit(Ball_scaled,(ball_x,ball_y))
+        screen.blit(text,(360,25))
+
+        if p1_y <= 0:
+            p1_y = 0
+        if p1_y >= 300:
+            p1_y = 300
+        if p2_y <= 0:
+            p2_y = 0
+        if p2_y >= 300:
+            p2_y = 300
+        ball_x += ballspeed_x
+        ball_y += ballspeed_y 
+    
+        # Check for collision with player 1
+        if player1.collidepoint(ball_x-18, ball_y):
+            ballspeed_x *= -1
+
+        # Check for collision with player 2
+        if player2.collidepoint(ball_x+30, ball_y):
+            ballspeed_x *= -1
+    else:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+        screen.fill('black')
+        font2 = pygame.font.Font(None,50)
+        if p1_goals == 10:
+            win_font = font2.render('Player 1 WIN',False,'red')
+            screen.blit(win_font,(320,150))
+        elif p2_goals == 10:
+            win_font = font2.render('Player 2 WIN',False,'green')
+            screen.blit(win_font,(300,150))
+
+             
+
+
+        
+        
+        
+        
+        
+        
+             
+    
+    
+    pygame.display.update()
+    clock.tick(100)
+pygame.quit
